@@ -1,0 +1,5 @@
+Flask 
+pydo
+boto3
+flask-restplus
+flask-restx
