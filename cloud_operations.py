@@ -10,6 +10,9 @@ from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import NoCredentialsError, ClientError
 
 
+from utils.utils import get_youtube_id, transcript_yt, download_yt
+
+
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -41,6 +44,8 @@ class CloudOperations:
 
         self.space_name = config.get('AWS_BUCKET_NAME')
         self.region = config.get('AWS_DEFAULT_REGION')
+
+        os.environ["OPENAI_API_KEY"] = config.get('OPENAI_API_KEY')
         
         self.s3_resource = boto3.resource(
             's3',
@@ -210,4 +215,20 @@ class CloudOperations:
             logger.error(f'Exception: {str(e)}')
             return {'status': 'fail', 'message': str(e)}, 500
         
-    def process_file(self, request):
+    def transcribe_yt_url(self, request):
+        try:
+            url = request.args.get('url')
+            if not url:
+                logger.error('No url provided')
+                return {'status': 'fail', 'message': 'No url provided'}, 400
+
+            try:
+                logger.info(f'The URL  {url} will be processed')
+                transcript = transcript_yt(download_yt(url))
+                return {'status': 'success', 'transcript': transcript}, 200
+            except ClientError as e:
+                logger.error(f'Client error: {str(e)}')
+                return {'status': 'fail', 'message': str(e)}, 500
+
+        except Exception as e:
+            logger.error(f'Exception: {str(e)}')

@@ -3,3 +3,6 @@ pydo
 boto3
 flask-restplus
 flask-restx
+pytube
+moviepy
+OpenAI

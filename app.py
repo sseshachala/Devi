@@ -86,5 +86,12 @@ class DeleteFiles(Resource):
         response, status = cloud_ops.delete_files(request)
         return jsonify(response), status
 
+@api.route('/transcribeYTUrl')
+class TranscribeYTUrl(Resource):
+    @require_api_key
+    def post(self):
+        response, status = cloud_ops.transcribe_yt_url(request)
+        return jsonify(response), status
+    
 if __name__ == '__main__':
     app.run(debug=True)
